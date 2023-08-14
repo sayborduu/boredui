@@ -1,0 +1,83 @@
+local urlRequire = function(url)
+	return loadstring(game:HttpGet(('https://raw.githubusercontent.com/sayborduu/boredui/main/' .. url), true))()
+end)
+local Lighting = game:GetService("Lighting")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+
+local Window = urlRequire('Window.lua')
+local Hub = urlRequire('Hub.lua')
+local Notifications = urlRequire('Notifications.lua')
+
+local Saves = {}
+return function()
+	local boredui_settings = {
+		MenuBlur = true,
+		BlurSize = 11.5
+	}
+	
+	Saves["Blur"] = script.Blur
+	Saves.Blur.Enabled = boredui_settings.MenuBlur
+	Saves.Blur.Size = 0
+	Saves.Blur.Parent = Lighting
+
+	local Hub = Hub.load(Saves)
+	Notifications.setParent(Hub.ui)
+	
+	local boredui = {
+		ApplySettings = function(userSettings)
+			for i, v in pairs(userSettings) do
+				boredui_settings[i] = v
+			end
+		end,
+		
+		CreateWindow = function(name, icon)
+			local Window = Window.new(name, icon, #Hub.ui.Hub.Items:GetChildren() - 1, Hub.ui.UIs)
+			Hub.AddActionButton(Window.hub_button, function()
+				Window.obj.Visible = not Window.obj.Visible
+				return {
+					Status = Window.obj.Visible
+				}
+				
+			end, #Hub.ui.Hub.Items:GetChildren())
+			return Window
+		end,
+		
+		createNotification = function(title, desc, closetime)
+			Notifications.prompt(title, desc, closetime)
+		end,
+		
+		Init = function()
+			local Settings = Window.new("Settings", 'rbxassetid://3605022185', 999, Hub.ui.UIs)
+			Hub.AddActionButton(Settings.hub_button, function()
+				Settings.obj.Visible = not Settings.obj.Visible
+				return {
+					Status = Settings.obj.Visible
+				}
+			end, 999)
+			Settings.AddPlayer()
+			Settings.AddButton("Destroy BoredUI", function()
+				Hub.Hub:Destroy()
+			end)
+			
+			Settings.AddKeybind("Hub Keybind", Enum.KeyCode.Slash, function()
+				Hub.ToggleHub(Saves.Blur, boredui_settings.BlurSize)
+			end)
+			
+			Settings.AddCheckbox("Hub Blur", true, function(enabled)
+				Saves.Blur.Enabled = enabled
+				--TweenService:Create(Saves.Blur, TweenInfo.new(0.8, Enum.EasingStyle.Exponential), {Size = 0}):Play()
+			end)
+			
+			Settings.AddSlider("Hub Blur Size", 50, function(size)
+				boredui_settings.BlurSize = size
+			end)
+			
+			Settings.AddText("© BoredUI 2023")
+			
+			Hub.animateOutItems()
+		end,
+	}
+
+	return boredui
+end
