@@ -17,6 +17,10 @@
 
 * Github: [@sayborduu](https://github.com/sayborduu)
 
+## Documentation
+
+You can find al the current documentation [in this link](https://boredui.notion.site/1f35f313069f466d9f100042001fb6d7).
+
 ## Show your support
 
 Give a ⭐️ if this project helped you!
